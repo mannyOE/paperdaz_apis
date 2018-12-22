@@ -9,7 +9,9 @@ var isLoggedIn = util.isLoggedIn;
 var user_controller = require('../controllers/user_controller');
 var employment_upload = util.upload_loan_employment;
 
-
+router.get('/test', (req, res)=>{
+	res.send("Successfull test");
+});
 router.post('/signup', user_controller.signup);
 router.post('/login', user_controller.login);
 router.get('/verify/:tken', user_controller.confirm_account);
