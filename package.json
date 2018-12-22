@@ -29,7 +29,7 @@
     "q": "^1.5.1",
     "request-promise": "^4.2.2",
     "sendmail": "^1.4.1",
-    "shortid": "^2.2.13",
+    "shortid": "^2.2.13"
   },
   "devDependencies": {
     "coveralls": "~2.11.15",
