@@ -42,11 +42,11 @@
     "should": "^11.1.0"
   },
   "scripts": {
-    "start": "node dev.js",
+    "dev": "node dev.js",
     "eslint": "eslint",
     "test": "./node_modules/.bin/mocha test --timeout 20000",
     "test:coverage": "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha  -- --timeout 10000 --recursive test --report lcovonly -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
-    "product": "node run.js"
+    "start": "node run.js"
   },
   "author": "ALEXANDER ONAH",
   "license": "MIT"
