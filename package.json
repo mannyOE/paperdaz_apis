@@ -1,5 +1,5 @@
 {
-  "name": "crevance-v0.0.1",
+  "name": "paperdaz-v0.0.1",
   "description": "A loan application",
   "node-main": "./run.js",
   "dependencies": {
@@ -26,13 +26,10 @@
     "nodemailer-smtp-transport": "^2.7.4",
     "passport": "~0.3.2",
     "passport-jwt": "~2.1.0",
-    "paystack-js": "^0.13.5",
     "q": "^1.5.1",
-    "quicksms": "^2.0.3",
     "request-promise": "^4.2.2",
     "sendmail": "^1.4.1",
     "shortid": "^2.2.13",
-    "twilio": "^3.19.2"
   },
   "devDependencies": {
     "coveralls": "~2.11.15",
