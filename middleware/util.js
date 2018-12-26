@@ -764,7 +764,7 @@ module.exports = {
 
   },
   badRequest: (req, res, next) => {
-    res.status(400).json(req.responseBody);
+    res.status(200).json(req.responseBody);
   },
   goodRequest: (req, res, next) => {
     res.status(200).json(req.responseBody);

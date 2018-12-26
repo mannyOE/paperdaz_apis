@@ -52,8 +52,7 @@ var user_mgt_apis = {
 			return;
 		}
 
-		if (req.body.phone === undefined || req.body.phone.length < 8) {
-	    	console.log('signup');
+		if (req.body.telephone === undefined || req.body.telephone.length < 8) {
 			req.responseBody = {
 				success: false,
 				message: 'Please provide a valid phone number to continue',
@@ -61,63 +60,14 @@ var user_mgt_apis = {
 			util.badRequest(req, res, next);
 			return;
 		}
-		// console.log('signupb');
-		// if(Number(req.body.bvn) === 0||req.body.bvn===undefined||req.body.bvn.length<9){
-		//   req.responseBody = {
-		//     success: false,
-
-		//         message: 'Please provide a valid BVN to continue',  
-		//   }
-		//   util.badRequest(req, res, next);
-		//   return;
-		// }
-		console.log('signupq');
-		if (req.body.security_question === undefined || req.body.security_question.length < 1) {
-			req.responseBody = {
-				success: false,
-
-				message: 'Please provide a valid security question to continue',
-			}
-			util.badRequest(req, res, next);
-			return;
-		}
-		console.log('signupa');
-		if (req.body.security_answer === undefined || req.body.security_answer.length < 1) {
-			req.responseBody = {
-				success: false,
-
-				message: 'Please provide an answer to your security question to continue',
-			}
-			util.badRequest(req, res, next);
-			return;
-		}
-		console.log('signupv');
-		if (Number(req.body.verifyBy) === 0 || req.body.verifyBy === undefined) {
-			req.responseBody = {
-				success: false,
-
-				message: 'Please provide a preferred verification option to continue',
-			}
-			util.badRequest(req, res, next);
-			return;
-		}
+	
 
 		var token = bcrypt.hashSync(shortid.generate()).replace(/[^\w]/g, "");
-		var apprmanager = new User({
-			firstName: req.body.firstName,
-			lastName: req.body.lastName,
-			email: req.body.email,
-			username: req.body.username,
-			phone: req.body.phone,
-			password: bcrypt.hashSync(req.body.password),
-			accountId: shortid.generate(),
-			verificationToken: token,
-			bvn: req.body.bvn,
-			security_question: req.body.security_question,
-			security_answer: req.body.security_answer,
-			role: 5,
-		}
-		);
+		var user = req.body;
+		user.email = user.email.toLowerCase();
+		user.verificationToken = token;
+		user.password = bcrypt.hashSync(user.password);
+		var apprmanager = new User(user);
 		apprmanager.save(function (err) {
 			if (err) {
 				req.responseBody = {
@@ -129,14 +79,7 @@ var user_mgt_apis = {
 				return;
 			}
 			var token_url = mail_url + '/verify-user/' + token;
-			// send verification email here
-			if (req.body.verifyBy === 'sms') {
-				var body = {
-					message: "Please click this link to verify your account. \n" + token_url,
-					phone: req.body.phone
-				}
-				util.send_sms(body);
-			} else if (req.body.verifyBy === 'email') {
+			
 				var dataz = {
 					email: req.body.email,
 					firstName: req.body.firstName,
@@ -146,22 +89,7 @@ var user_mgt_apis = {
 					url: token_url
 				}
 				util.Email(dataz);
-			} else {
-				var body = {
-					message: "Please click this link to verify your account. \n" + token_url,
-					phone: req.body.phone
-				}
-				util.send_sms(body);
-				var dataz = {
-					email: req.body.email,
-					firstName: req.body.firstName,
-					lastName: req.body.lastName,
-					template: 'email_confirm',
-					subject: "New Account Verification",
-					url: token_url
-				}
-				util.Email(dataz);
-			}
+			
 
 			return res.json({
 				success: true,
@@ -174,15 +102,35 @@ var user_mgt_apis = {
 
 
 	login: (req, res, next) => {
-		if (Number(req.body.email) === 0 || req.body.email === undefined || !util.check_email(req.body.email)) {
-			req.responseBody = {
-				success: false,
+		var query = {};
+		if(req.body.login_with){
+			query = {
+				email: req.body.email
+			};
+			if (Number(req.body.email) === 0 || req.body.email === undefined || !util.check_email(req.body.email)) {
+				req.responseBody = {
+					success: false,
 
-				message: 'A Valid email address must be provided to login',
+					message: 'A Valid email address must be provided to login',
+				}
+				util.badRequest(req, res, next);
+				return;
 			}
-			util.badRequest(req, res, next);
-			return;
+		}else{
+			query = {
+				telephone: req.body.telephone
+			};
+			if (Number(req.body.telephone) === 0 || req.body.telephone === undefined ) {
+				req.responseBody = {
+					success: false,
+
+					message: 'A Valid email address must be provided to login',
+				}
+				util.badRequest(req, res, next);
+				return;
+			}
 		}
+		
 		if (Number(req.body.password) === 0 || req.body.password === undefined) {
 			req.responseBody = {
 				success: false,
@@ -192,7 +140,7 @@ var user_mgt_apis = {
 			util.badRequest(req, res, next);
 			return;
 		}
-		User.findOne({ email: req.body.email }, function (err, uder) {
+		User.findOne(query, function (err, uder) {
 
 			if (err) {
 				req.responseBody = {
@@ -210,16 +158,7 @@ var user_mgt_apis = {
 				util.badRequest(req, res, next);
 				return;
 		    } else {
-				var user_details = uder;
-				//  	if((uder && !user_details.isVerified) || (user1 && user_details.disabled)){
-				//          req.responseBody = {
-				// 	success: false,
-				//         message: 'This user is not active'
-				// }
-				// util.badRequest(req, res, next);
-				//          return;
-				//      }
-				if (uder !== null) {
+				
 					if (!uder.isVerified) {
 						req.responseBody = {
 							success: false,
@@ -228,19 +167,9 @@ var user_mgt_apis = {
 						util.badRequest(req, res, next);
 						return;
 					}
-					if (!uder.enabled) {
-						req.responseBody = {
-							success: false,
-							message: 'This account has been disabled'
-						}
-						util.badRequest(req, res, next);
-						return;
-					}
-				}
 
 
-				bcrypt.compare(req.body.password, user_details.password, function (err, crypt) {
-					console.log(crypt);
+				bcrypt.compare(req.body.password, uder.password, function (err, crypt) {
 					if (crypt != true) {
 						return res.status(404).send({
 							success: false,
@@ -248,19 +177,27 @@ var user_mgt_apis = {
 						});
 					} else {
 						var payload = {
-							id: user_details._id,
-							accountId: user_details.accountId || user_details.username
+							id: uder._id,
+							accountId: uder.accountId || uder.username
 						}
-						delete user_details.password;
+						delete uder.password;
 						var token = jwt.sign(payload, util.secret);
+						var dashboard = {};
+						if(uder.role == 1){
+							dashboard = {name:'admin_dash'};
+						}else if(uder.role == 2){
+							dashboard = {name:'business_dash'};
+						}else{
+							dashboard = {name:'user_dash'};
+						}
 						return res.status(200).send({
 							success: true,
 							message: 'User Logged In Successfully',
 							result: {
-								user: user_details,
-								role: user_details.role,
+								dashboard: dashboard,
+								user: uder,
 								token: token,
-								isVerified: user_details.isVerified || user_details.disabled,
+								isVerified: uder.isVerified,
 							}
 						});
 					}

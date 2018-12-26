@@ -13,7 +13,7 @@ global.hostname   = process.env.HOSTNAME || "178.128.34.164";
 hostname = global.hostname.toLowerCase();
 global.hostport   = app.get('port');
 global.hosturl    = "http://"+hostname+":"+hostport;
-global.mail_url = "http://"+hostname;
+global.mail_url = "http://positive-difference.appspot.com";
 
 app.use(fileUpload({
   limits: { fileSize: 50 * 1024 * 1024 },

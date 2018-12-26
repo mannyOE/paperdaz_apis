@@ -7,59 +7,35 @@ var mongoosePaginate = require('mongoose-paginate');
 
 // set up a mongoose model
 const UserSchema = new Schema({
-    username: {
-        type: String,
-        alphanumeric: true,
-        minLength: 3
-    },
+    
     email: {
         type: String,
         unique: true,
         required: true
     },
-    
-    identificationType: String,
-    identificationImage: String,
-    identificationExpiry: String,
-    security_question: String,
-    security_answer: String,
+    businessName: {
+        type: String
+    },
+    telephone: {
+        type: String,
+        unique: true,
+        required: true
+    },    
     isVerified: {
         type: Boolean,
         default: false
     },
-    // isAuthenticated: {
-    //     type: Boolean,
-    //     required: true
-    // },
+    industry:String,
+    address:String,
+    country: String,
+    
     verificationToken: {
         type: String,
     },
-    enabled: {type:Boolean, default: true},
-    phone: {
-        type: String,
-        unique: true,
-        required: true
-    },
-    bvn: {
-        type: String,
-    },
-    role: Number,
-    image: {
-        type: String
-    },
-    gender: String,
-
-    // displayName: {
-    //     type: String,
-    //     lowercase: true,
-    // },
+    
     firstName: {
         type: String,
         lowercase: true,
-    },
-    profile_status: {
-        type: Boolean,
-        default: false
     },
     lastName: {
         type: String,
@@ -70,16 +46,7 @@ const UserSchema = new Schema({
         required: [true, 'Password is required'],
         minLength: 4
     },
-    accountId: {
-        type: String,
-        required: true
-    },
-    proof_employment_upload: {
-        type: String,
-      },
-    employmentType: String,
-    companyName: String,
-    positionInCompany: String,
+    position: String,
 }, { timestamp: true });
 
 UserSchema.plugin(mongoosePaginate);
